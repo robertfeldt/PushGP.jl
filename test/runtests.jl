@@ -2,5 +2,9 @@ using PushGP
 using Test
 
 @testset "PushGP.jl" begin
-    # Write your own tests here.
+
+include("test_push_stack.jl")
+#include("test_examples_README.jl")
+#include("test_examples_PushGP_doc.jl")
+
 end
