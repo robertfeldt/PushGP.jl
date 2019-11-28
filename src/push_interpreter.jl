@@ -30,18 +30,35 @@ abstract type PushInstruction end
 # This is the default type for things that can be part of a Push program.
 const PushLiteralOrInstruction = Union{Int, Float64, Bool, String, PushInstruction}
 
-# The standard/default PushVM has stacks for all the common things
+# The standard/default PushVM has stacks for all the common things and executes via
+# the Exec stack.
 struct PushInterpreter{T} <: AbstractPushInterpreter
-    exec_stack::Vector{T}
+    exec_stack::Stack{T}
     stack_Int::Stack{Int}
     stack_Float64::Stack{Float64}
     stack_Bool::Stack{Bool}
     stack_String::Stack{String}
     PushInterpreter{T}() where {T} = begin
-        new(T[], 
+        new(Stack{T}(), 
             Stack{Int}(), Stack{Float64}(), 
             Stack{Bool}(), Stack{String}())
     end
 end
 PushInterpreter() = PushInterpreter{PushLiteralOrInstruction}()
 stacktypes(i::PushInterpreter) = DataType[Int, Float64, String, Bool]
+
+function execute!(interp::PushInterpreter, program::AbstractArray)
+    # Push in reverse order
+    for instr in Iterators.reverse(program)
+        push!(interp.exec_stack, instr)
+    end
+    # Then run from exec_stack
+    run_from_execstack!(interp)
+end
+
+function run_from_execstack!(interp::PushInterpreter)
+    while length(interp.exec_stack) > 0
+        i = pop!(interp.exec_stack)
+        execute!(i, interp)
+    end
+end
