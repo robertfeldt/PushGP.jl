@@ -19,3 +19,13 @@ struct Div{T} <: PushBinaryOp{T} end
     push!(interp, res)
 end
 oldopname(::Type{<:Div}) = "/"
+
+struct Mod{T} <: PushBinaryOp{T} end
+@inline function execute!(i::Mod{T}, interp::AbstractPushInterpreter) where {T}
+    stackhas(interp, T, 2) || return(nothing)
+    last(stack(interp, T)) == 0 && return(nothing)
+    a, b = pop2!(interp, T)
+    res = div(b, a)
+    push!(interp, res)
+end
+oldopname(::Type{<:Mod}) = "%"

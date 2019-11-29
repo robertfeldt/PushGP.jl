@@ -1,7 +1,7 @@
 using PushGP: PushInstruction, inputtypes, outputtypes, neededstacks, hasstacks, split_type_name_in_parts
 using PushGP: numoutputs, arity, name, opname, execute!, oldname, oldopname, desc
 using PushGP: PushInstructionA1tA1, Lit, Add, names, Sub, Mul, Div, AfromB
-using PushGP: Dup, Swap, Flush, StackDepth, Eq, Lt, Gt
+using PushGP: Dup, Swap, Flush, StackDepth, Eq, Lt, Gt, Mod
 using PushGP: PushInterpreter, stack
 
 struct EmptyInstr <: PushInstruction end
@@ -97,7 +97,7 @@ end # @testset "Literal instruction" begin
     execute!(i, interp)
     @test length(stack(interp, Int)) == 1
     @test last(stack(interp, Int)) == 3
-end # @testset "Number instructions" begin
+end # @testset "Add instructions" begin
 
 @testset "Sub instruction" begin
     i = Sub{Float64}()
@@ -113,7 +113,7 @@ end # @testset "Number instructions" begin
     execute!(i, interp)
     @test length(stack(interp, Float64)) == 1
     @test last(stack(interp, Float64)) == (1.0 - 2.1)
-end # @testset "Number instructions" begin
+end # @testset "Sub instructions" begin
 
 @testset "Mul instruction" begin
     i = Mul{Float64}()
@@ -144,7 +144,7 @@ end # @testset "Number instructions" begin
     execute!(i, interp)
     @test length(stack(interp, String)) == 1
     @test last(stack(interp, String)) == "abc34" # Note order
-end # @testset "Number instructions" begin
+end # @testset "Mul instructions" begin
 
 @testset "Div instruction" begin
     i = Div{Float64}()
@@ -168,7 +168,30 @@ end # @testset "Number instructions" begin
     @test execute!(i, interp) === nothing
     @test length(stack(interp, Float64)) == 2
     @test last(stack(interp, Float64)) == 0.0
-end # @testset "Number instructions" begin
+end # @testset "Div instructions" begin
+
+@testset "Mod instruction" begin
+    i = Mod{Float64}()
+    @test name(i) == "float64_mod"
+    @test opname(i) == "mod"
+    @test oldopname(i) == "%"
+    @test oldname(i) == "FLOAT64.%"
+
+    interp = PushInterpreter()
+    push!(interp, 4.5)
+    push!(interp, 2.0)
+    execute!(i, interp)
+    @test length(stack(interp, Float64)) == 1
+    @test last(stack(interp, Float64)) == 2.0
+
+    # Note that if denominator is 0.0 the Mod instruction is a No-Op
+    interp = PushInterpreter()
+    push!(interp, 3.1)
+    push!(interp, 0.0)
+    @test execute!(i, interp) === nothing
+    @test length(stack(interp, Float64)) == 2
+    @test last(stack(interp, Float64)) == 0.0
+end # @testset "Mod instructions" begin
 
 @testset "AfromB instructions" begin
     i = AfromB{String,Float64}()
