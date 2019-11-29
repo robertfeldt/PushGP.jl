@@ -29,3 +29,9 @@ struct Mod{T} <: PushBinaryOp{T} end
     push!(interp, res)
 end
 oldopname(::Type{<:Mod}) = "%"
+
+struct Max{T} <: PushBinaryOp{T} end
+execute_op(i::Max{T}, a::T, b::T) where {T} = max(a, b)
+
+struct Min{T} <: PushBinaryOp{T} end
+execute_op(i::Min{T}, a::T, b::T) where {T} = min(a, b)

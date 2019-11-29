@@ -1,7 +1,7 @@
 using PushGP: PushInstruction, inputtypes, outputtypes, neededstacks, hasstacks, split_type_name_in_parts
 using PushGP: numoutputs, arity, name, opname, execute!, oldname, oldopname, desc
 using PushGP: PushInstructionA1tA1, Lit, Add, names, Sub, Mul, Div, AfromB
-using PushGP: Dup, Swap, Flush, StackDepth, Eq, Lt, Gt, Mod
+using PushGP: Dup, Swap, Flush, StackDepth, Eq, Lt, Gt, Mod, Max, Min
 using PushGP: PushInterpreter, stack
 
 struct EmptyInstr <: PushInstruction end
@@ -192,6 +192,36 @@ end # @testset "Div instructions" begin
     @test length(stack(interp, Float64)) == 2
     @test last(stack(interp, Float64)) == 0.0
 end # @testset "Mod instructions" begin
+
+@testset "Max instructions" begin
+    i = Max{Float64}()
+    @test name(i) == "float64_max"
+    @test opname(i) == "max"
+    @test oldopname(i) == "MAX"
+    @test oldname(i) == "FLOAT64.MAX"
+
+    interp = PushInterpreter()
+    push!(interp, 3.1)
+    push!(interp, 17.54)
+    execute!(i, interp)
+    @test length(stack(interp, Float64)) == 1
+    @test last(stack(interp, Float64)) == 17.54
+end # @testset "Max instruction" begin
+
+@testset "Max instructions" begin
+    i = Min{Float64}()
+    @test name(i) == "float64_min"
+    @test opname(i) == "min"
+    @test oldopname(i) == "MIN"
+    @test oldname(i) == "FLOAT64.MIN"
+
+    interp = PushInterpreter()
+    push!(interp, 3.1)
+    push!(interp, 17.54)
+    execute!(i, interp)
+    @test length(stack(interp, Float64)) == 1
+    @test last(stack(interp, Float64)) == 3.1
+end # @testset "Max instruction" begin
 
 @testset "AfromB instructions" begin
     i = AfromB{String,Float64}()
