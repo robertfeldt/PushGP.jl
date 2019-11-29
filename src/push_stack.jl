@@ -12,6 +12,10 @@ import Base: length, push!, pop!, last, empty!
 @inline push!(s::Stack{T}, o::T) where {T} = push!(s.st, o)
 @inline push!(s::Stack, o) = error("Objects of type $(typeof(o)) cannot be put on a $(typeof(s))")
 @inline pop!(s::Stack) = pop!(s.st)
-@inline pop2!(s::Stack) = return(pop!(s.st), pop!(s.st))
+@inline function pop2!(s::Stack)
+    a = pop!(s.st)
+    b = pop!(s.st)
+    return (a, b) # Note that element at the back is returned first
+end
 @inline last(s::Stack) = last(s.st)
 @inline empty!(s::Stack) = empty!(s.st)

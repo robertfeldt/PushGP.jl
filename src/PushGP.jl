@@ -2,7 +2,7 @@ module PushGP
 
 include("push_stack.jl")
 include("push_interpreter.jl")
-#include("instructions.jl")
+include("instructions.jl")
 #include("stack_instructions.jl")
 #include("number_instructions.jl")
 
