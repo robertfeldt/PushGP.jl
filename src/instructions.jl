@@ -28,20 +28,16 @@ end
 @inline opname(::Type{I}) where {I<:PushInstruction} =
     lowercase(first(split_type_name_in_parts(I)))
 
-const TypeNameRegexp = r"([^{]+){([^,]+)(.+)*}"
+const TypeNameRegexp = r"([^{]+){([^,]+)(.*)}"
 
 function split_type_name_in_parts(::Type{I}) where {I<:PushInstruction}
     m = match(TypeNameRegexp, string(I))
     if m === nothing
-        # No subtypes
-        return string(I), nothing
-    end
-    if length(m.captures) == 2 # Most common case
-        return m[1], m[2] # Note that 3 will need to be further sub-divided for complex types...
-    elseif length(m.captures) == 1
-        return m[1], ""
-    else
-        return m[1], m[2], m[3]
+        return string(I), nothing, nothing
+    elseif length(m.captures) == 2 || m[3] == ""
+        return m[1], m[2], nothing
+    elseif length(m.captures) == 3
+        return m[1], m[2], map(strip, filter(s -> length(s) > 0, split(m[3], ",")))
     end
 end
 

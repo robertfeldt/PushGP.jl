@@ -1,4 +1,4 @@
-using PushGP: PushInstruction, inputtypes, outputtypes, neededstacks, hasstacks
+using PushGP: PushInstruction, inputtypes, outputtypes, neededstacks, hasstacks, split_type_name_in_parts
 using PushGP: numoutputs, arity, name, opname, execute!, oldname, oldopname, desc
 using PushGP: PushInstructionA1tA1, Lit, Add, names, Sub, Mul, Div, AfromB
 using PushGP: Dup, Swap, Flush, StackDepth
@@ -44,6 +44,23 @@ struct EmptyA1tA1{T} <: PushInstructionA1tA1{T} end
     @test oldopname(eia1a1_b) == "EMPTYA1TA1"
     @test sort(names(eia1a1_b)) == sort(["STRING.EMPTYA1TA1", "string_emptya1ta1"])
 end # @testset "Instructions" begin
+
+@testset "split_type_name_in_parts" begin
+    tn, st1, rest = split_type_name_in_parts(PushInstruction)
+    @test tn    == "PushInstruction"
+    @test st1  === nothing
+    @test rest === nothing
+
+    tn, st1, rest = split_type_name_in_parts(Add{Int})
+    @test tn   == "Add"
+    @test st1  == "Int64"
+    @test rest === nothing
+
+    tn, st1, rest = split_type_name_in_parts(AfromB{Int,Float64})
+    @test tn   == "AfromB"
+    @test st1  == "Int64"
+    @test rest == ["Float64"]
+end # @testset "Literal instruction" begin
 
 @testset "Literal instruction" begin
     li = Lit(23)
