@@ -19,6 +19,7 @@ end
 @inline execstack(i::AbstractPushInterpreter) = i.exec_stack
 
 @inline stackhas(i::AbstractPushInterpreter, T::DataType, n::Int) = length(stack(i, T)) >= n
+@inline pop!(i::AbstractPushInterpreter, I::DataType) = pop!(stack(i, I))
 @inline pop2!(i::AbstractPushInterpreter, I::DataType) = pop2!(stack(i, I))
 @inline push!(i::AbstractPushInterpreter, val::O) where {O} = push!(stack(i, O), val)
 

@@ -1,6 +1,6 @@
 using PushGP: PushInstruction, inputtypes, outputtypes, neededstacks, hasstacks
 using PushGP: numoutputs, arity, name, opname, execute!, oldname, oldopname, desc
-using PushGP: PushInstructionA1tA1, Lit, Add, names, Sub, Mul, Div
+using PushGP: PushInstructionA1tA1, Lit, Add, names, Sub, Mul, Div, AfromB
 using PushGP: PushInterpreter, stack
 
 struct EmptyInstr <: PushInstruction end
@@ -143,3 +143,15 @@ end # @testset "Number instructions" begin
     @test length(stack(interp, Float64)) == 2
     @test last(stack(interp, Float64)) == 0.0
 end # @testset "Number instructions" begin
+
+@testset "AfromB instructions" begin
+    i = AfromB{String,Float64}()
+    @test name(i) == "string_from_float64"
+    @test opname(i) == "from"
+
+    interp = PushInterpreter()
+    push!(interp, 3.0)
+    execute!(i, interp)
+    @test length(stack(interp, String)) == 1
+    @test last(stack(interp, String)) == "3.0"
+end

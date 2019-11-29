@@ -30,6 +30,23 @@ intstack = stack(i, Int)
 @assert length(intstack) == 1
 ```
 
+We can continue execution on this interpreter. Let's now try a more complex example:
+
+```
+execute!(i, [5, 6.5, Sub{Int}(), 2.0, Mul{Float64}(), 4.0, Div{Float64}(), AfromB{String,Float64}(), 1.7])
+```
+
+Here we can see how interleaved order of instructions doesn't matter since there are multiple, independent stacks. For example, the `Sub{Int}` instruction above will put 2 on the Int stack since 7 was already on there and we then pushed 5 and then executed the `Sub{Int}` instruction. It didn't matter that 6.5 happened in between since it was just pushed on the `Float64` stack. The `Mul{Float64}()` then multiplied 2.0 and 6.5, leaving 13.0 on the Float64 stack. After pushing 4.0 the `Div{Float64}()` instruction left 3.25 on the stack which was then converted to the String "3.25". The final state of the stacks is now:
+
+```
+    @assert last(stack(i, Int)) == 2
+    @assert length(stack(i, Int)) == 1
+    @assert last(stack(i, String)) == "3.25" # string((2.0 * 6.5) / 4.0)
+    @assert length(stack(i, String)) == 1
+    @assert last(stack(i, Float64)) == 1.7
+    @assert length(stack(i, Float64)) == 1
+```
+
 There is a [large number of Push instructions](https://faculty.hampshire.edu/lspector/push3-description.html) and this package does not yet implement them all. However, this will be fixed over time and it is often trivial to add individual instructions (requiring only to write a few lines of Julia code). However, more important than implement the standard Push language is that a user can easily add their own, custom instructions and thus do genetic programming for specific domains and problems.
 
 ## Why genetic programming?

@@ -19,11 +19,11 @@ names(::Type{I}) where {I<:PushInstruction} = unique([name(I), oldname(I)])
 
 @inline function name(::Type{I}) where {I<:PushInstruction}
     oname, stname = split_type_name_in_parts(I)
-    isnothing(stname) ? opname(I) : (lowercase(stname) * "_" * opname(I))
+    (stname === nothing) ? opname(I) : (lowercase(stname) * "_" * opname(I))
 end    
 @inline function oldname(::Type{I}) where {I<:PushInstruction}
     oname, stname = split_type_name_in_parts(I)
-    isnothing(stname) ? oldopname(I) : (uppercase(stname) * "." * oldopname(I))
+    (stname === nothing) ? oldopname(I) : (uppercase(stname) * "." * oldopname(I))
 end    
 @inline opname(::Type{I}) where {I<:PushInstruction} =
     lowercase(first(split_type_name_in_parts(I)))
@@ -32,7 +32,7 @@ const TypeNameRegexp = r"([^{]+){([^,]+)(.+)*}"
 
 function split_type_name_in_parts(::Type{I}) where {I<:PushInstruction}
     m = match(TypeNameRegexp, string(I))
-    if isnothing(m)
+    if m === nothing
         # No subtypes
         return string(I), nothing
     end
@@ -56,6 +56,10 @@ end
 abstract type PushInstructionA1tA1{T} <: PushInstruction end
 inputtypes(i::PushInstructionA1tA1{T}) where {T} = DataType[T]
 outputtypes(i::PushInstructionA1tA1{T}) where {T} = DataType[T]
+
+abstract type PushInstructionA1tB1{I,O} <: PushInstruction end
+inputtypes(i::PushInstructionA1tB1{I,O}) where {I,O} = DataType[I]
+outputtypes(i::PushInstructionA1tB1{I,O}) where {I,O} = DataType[O]
 
 abstract type PushUnaryOp{T} <: PushInstructionA1tA1{T} end
 
@@ -93,3 +97,4 @@ end
 #include("instructions/stack_instructions.jl")
 include("instructions/number_instructions.jl")
 #include("instructions/bool_instructions.jl")
+include("instructions/conversion_instructions.jl")
