@@ -1,6 +1,7 @@
 using PushGP: PushInstruction, inputtypes, outputtypes, neededstacks, hasstacks
 using PushGP: numoutputs, arity, name, opname, execute!, oldname, oldopname, desc
 using PushGP: PushInstructionA1tA1, Lit, Add, names, Sub, Mul, Div, AfromB
+using PushGP: Dup, Swap, Flush, StackDepth
 using PushGP: PushInterpreter, stack
 
 struct EmptyInstr <: PushInstruction end
@@ -167,4 +168,61 @@ end # @testset "Number instructions" begin
     @test length(stack(interp, Int)) == 0
     @test length(stack(interp, Float64)) == 1
     @test last(stack(interp, Float64)) == 5.0
+end
+
+@testset "Dup stack instruction" begin
+    i = Dup{String}()
+    @test name(i) == "string_dup"
+    @test oldname(i) == "STRING.DUP"
+    @test opname(i) == "dup"
+
+    interp = PushInterpreter()
+    push!(interp, "42")
+    execute!(i, interp)
+    @test length(stack(interp, String)) == 2
+    @test last(stack(interp, String)) == "42"
+end
+
+@testset "Swap stack instruction" begin
+    i = Swap{Bool}()
+    @test name(i) == "bool_swap"
+    @test oldname(i) == "BOOL.SWAP"
+    @test opname(i) == "swap"
+
+    interp = PushInterpreter()
+    push!(interp, true)
+    push!(interp, false)
+    execute!(i, interp)
+    @test length(stack(interp, Bool)) == 2
+    @test last(stack(interp, Bool)) == true # Before swap true was next to last now it is last
+    @test stack(interp, Bool)[end-1] == false
+end
+
+@testset "Flush stack instruction" begin
+    i = Flush{Int}()
+    @test name(i) == "int64_flush"
+    @test oldname(i) == "INT64.FLUSH"
+    @test opname(i) == "flush"
+
+    interp = PushInterpreter()
+    push!(interp, 1)
+    push!(interp, 2)
+    push!(interp, 3)
+    execute!(i, interp)
+    @test length(stack(interp, Int)) == 0
+end
+
+@testset "StackDepth stack instruction" begin
+    i = StackDepth{Int}()
+    @test name(i) == "int64_stackdepth"
+    @test oldname(i) == "INT64.STACKDEPTH"
+    @test opname(i) == "stackdepth"
+
+    interp = PushInterpreter()
+    push!(interp, 1)
+    push!(interp, 2)
+    push!(interp, 3)
+    execute!(i, interp)
+    @test length(stack(interp, Int)) == 4
+    @test last(stack(interp, Int)) == 3 # Since length was 3 when we executed instruction
 end

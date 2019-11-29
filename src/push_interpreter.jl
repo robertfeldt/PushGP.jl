@@ -25,11 +25,14 @@ end
 
 # Default execution behavior is to just push the value. This takes care of all literals.
 @inline execute!(instr, i::AbstractPushInterpreter) = push!(i, instr)
+# But if the instruction is an array we run it as a program
+execute!(instr::Vector, i::AbstractPushInterpreter) = execute!(i, instr)
 
 abstract type PushInstruction end
 
 # This is the default type for things that can be part of a Push program.
 const PushLiteralOrInstruction = Union{Int, Float64, Bool, String, PushInstruction}
+const PushProgram = Union{Int, Float64, Bool, String, PushInstruction, Vector}
 
 # The standard/default PushVM has stacks for all the common things and executes via
 # the Exec stack.
@@ -45,7 +48,7 @@ struct PushInterpreter{T} <: AbstractPushInterpreter
             Stack{Bool}(), Stack{String}())
     end
 end
-PushInterpreter() = PushInterpreter{PushLiteralOrInstruction}()
+PushInterpreter() = PushInterpreter{PushProgram}()
 stacktypes(i::PushInterpreter) = DataType[Int, Float64, String, Bool]
 
 function execute!(interp::PushInterpreter, program::AbstractArray)

@@ -94,7 +94,7 @@ end
 @inline desc(i::Lit) = string(i.value)
 
 # Load instructions for specific areas:
-#include("instructions/stack_instructions.jl")
+include("instructions/stack_instructions.jl")
 include("instructions/number_instructions.jl")
-#include("instructions/bool_instructions.jl")
+include("instructions/bool_instructions.jl")
 include("instructions/conversion_instructions.jl")

@@ -6,7 +6,7 @@ struct Stack{T} <: PushStack{T}
     Stack{T}() where {T} = new{T}(T[])
 end
 
-import Base: length, push!, pop!, last, empty!
+import Base: length, push!, pop!, last, empty!, getindex, lastindex
 
 @inline length(s::Stack) = length(s.st)
 @inline push!(s::Stack{T}, o::T) where {T} = push!(s.st, o)
@@ -19,3 +19,5 @@ import Base: length, push!, pop!, last, empty!
 end
 @inline last(s::Stack) = last(s.st)
 @inline empty!(s::Stack) = empty!(s.st)
+@inline getindex(s::Stack, args...) = getindex(s.st, args...)
+@inline lastindex(s::Stack) = lastindex(s.st)
