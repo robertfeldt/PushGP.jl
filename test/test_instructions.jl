@@ -7,6 +7,10 @@ using PushGP: PushInterpreter, stack
 struct EmptyInstr <: PushInstruction end
 struct EmptyA1tA1{T} <: PushInstructionA1tA1{T} end
 
+# To make the tests architecture-independent
+const IntStringL = lowercase(string(Int)) # Since it can be Int64 or Int32
+const IntStringU = uppercase(string(Int)) # Since it can be Int64 or Int32
+
 @testset "Instructions: basic" begin
     ei = EmptyInstr()
     @test inputtypes(ei) == DataType[]
@@ -30,10 +34,10 @@ struct EmptyA1tA1{T} <: PushInstructionA1tA1{T} end
     @test neededstacks(eia1a1) == DataType[Int]
     @test arity(eia1a1) == 1
     @test numoutputs(eia1a1) == 1
-    @test name(eia1a1) == "int64_emptya1ta1"
-    @test desc(eia1a1) == "int64_emptya1ta1"
+    @test name(eia1a1) == (IntStringL * "_emptya1ta1")
+    @test desc(eia1a1) == (IntStringL * "_emptya1ta1")
     @test opname(eia1a1) == "emptya1ta1"
-    @test oldname(eia1a1) == "INT64.EMPTYA1TA1"
+    @test oldname(eia1a1) == (IntStringU * ".EMPTYA1TA1")
     @test oldopname(eia1a1) == "EMPTYA1TA1"
 
     eia1a1_b = EmptyA1tA1{String}()
@@ -53,12 +57,12 @@ end # @testset "Instructions" begin
 
     tn, st1, rest = split_type_name_in_parts(Add{Int})
     @test tn   == "Add"
-    @test st1  == "Int64"
+    @test st1  == string(Int)
     @test rest === nothing
 
     tn, st1, rest = split_type_name_in_parts(AfromB{Int,Float64})
     @test tn   == "AfromB"
-    @test st1  == "Int64"
+    @test st1  == string(Int)
     @test rest == ["Float64"]
 end # @testset "Literal instruction" begin
 
@@ -69,8 +73,8 @@ end # @testset "Literal instruction" begin
     @test neededstacks(li) == DataType[Int]
     @test arity(li) == 0
     @test numoutputs(li) == 1
-    @test name(li) == "int64_lit"
-    @test oldname(li) == "INT64.LIT"
+    @test name(li) == IntStringL * "_lit"
+    @test oldname(li) == IntStringU * ".LIT"
     @test desc(li) == "23"
 
     interp = PushInterpreter()
@@ -82,10 +86,10 @@ end # @testset "Literal instruction" begin
 @testset "Add instruction" begin
     i = Add{Int}()
     @test isa(i, Add{Int})
-    @test name(i) == "int64_add"
+    @test name(i) == IntStringL * "_add"
     @test opname(i) == "add"
     @test oldopname(i) == "+"
-    @test oldname(i) == "INT64.+"
+    @test oldname(i) == IntStringU * ".+"
 
     interp = PushInterpreter()
     push!(interp, 1)
@@ -217,8 +221,8 @@ end
 
 @testset "Flush stack instruction" begin
     i = Flush{Int}()
-    @test name(i) == "int64_flush"
-    @test oldname(i) == "INT64.FLUSH"
+    @test name(i) == IntStringL * "_flush"
+    @test oldname(i) == IntStringU * ".FLUSH"
     @test opname(i) == "flush"
 
     interp = PushInterpreter()
@@ -231,8 +235,8 @@ end
 
 @testset "StackDepth stack instruction" begin
     i = StackDepth{Int}()
-    @test name(i) == "int64_stackdepth"
-    @test oldname(i) == "INT64.STACKDEPTH"
+    @test name(i) == IntStringL * "_stackdepth"
+    @test oldname(i) == IntStringU * ".STACKDEPTH"
     @test opname(i) == "stackdepth"
 
     interp = PushInterpreter()
