@@ -72,6 +72,10 @@ end # @testset "Stack{Bool}" begin
     a, b = pop2!(sst)
     @test a === "f"
     @test b === "cde"
+    
+    @test length(sst) == 1
+    empty!(sst)
+    @test length(sst) == 0
 
     # Can't push a Float on an Int stack
     @test_throws ErrorException push!(sst, 1)
