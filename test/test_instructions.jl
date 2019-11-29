@@ -1,7 +1,7 @@
 using PushGP: PushInstruction, inputtypes, outputtypes, neededstacks, hasstacks, split_type_name_in_parts
 using PushGP: numoutputs, arity, name, opname, execute!, oldname, oldopname, desc
 using PushGP: PushInstructionA1tA1, Lit, Add, names, Sub, Mul, Div, AfromB
-using PushGP: Dup, Swap, Flush, StackDepth
+using PushGP: Dup, Swap, Flush, StackDepth, Eq, Lt, Gt
 using PushGP: PushInterpreter, stack
 
 struct EmptyInstr <: PushInstruction end
@@ -190,6 +190,86 @@ end # @testset "Number instructions" begin
     @test length(stack(interp, Float64)) == 1
     @test last(stack(interp, Float64)) == 5.0
 end
+
+@testset "Eq instructions" begin
+    i = Eq{Float64}()
+    @test name(i)         == "float64_eq"
+    @test oldname(i)      == "FLOAT64.="
+    @test opname(i)       == "eq"
+    @test arity(i)        == 2
+    @test inputtypes(i)   == DataType[Float64, Float64]
+    @test outputtypes(i)  == DataType[Bool]
+    @test neededstacks(i) == DataType[Float64, Bool]
+
+    interp = PushInterpreter()
+    push!(interp, 5.0)
+    push!(interp, 5.0)
+    execute!(i, interp)
+    @test length(stack(interp, Bool)) == 1
+    @test last(stack(interp, Bool)) == true
+    @test length(stack(interp, Float64)) == 0
+
+    push!(interp, 1.1)
+    push!(interp, 1.2)
+    execute!(i, interp)
+    @test length(stack(interp, Bool)) == 2
+    @test last(stack(interp, Bool)) == false
+    @test length(stack(interp, Float64)) == 0
+end # @testset "Eq instructions" begin
+
+@testset "Lt instructions" begin
+    i = Lt{Int}()
+    @test name(i)         == IntStringL * "_lt"
+    @test oldname(i)      == IntStringU * ".<"
+    @test opname(i)       == "lt"
+    @test oldopname(i)    == "<"
+    @test arity(i)        == 2
+    @test inputtypes(i)   == DataType[Int, Int]
+    @test outputtypes(i)  == DataType[Bool]
+    @test neededstacks(i) == DataType[Int, Bool]
+
+    interp = PushInterpreter()
+    push!(interp, 2)
+    push!(interp, 3)
+    execute!(i, interp)
+    @test length(stack(interp, Bool)) == 1
+    @test last(stack(interp, Bool)) == true
+    @test length(stack(interp, Int)) == 0
+
+    push!(interp, 3)
+    push!(interp, 2)
+    execute!(i, interp)
+    @test length(stack(interp, Bool)) == 2
+    @test last(stack(interp, Bool)) == false
+    @test length(stack(interp, Int)) == 0
+end # @testset "Lt instructions" begin
+
+@testset "Gt instructions" begin
+    i = Gt{String}()
+    @test name(i)         == "string_gt"
+    @test oldname(i)      == "STRING.>"
+    @test opname(i)       == "gt"
+    @test oldopname(i)    == ">"
+    @test arity(i)        == 2
+    @test inputtypes(i)   == DataType[String, String]
+    @test outputtypes(i)  == DataType[Bool]
+    @test neededstacks(i) == DataType[String, Bool]
+
+    interp = PushInterpreter()
+    push!(interp, "c")
+    push!(interp, "a")
+    execute!(i, interp)
+    @test length(stack(interp, Bool)) == 1
+    @test last(stack(interp, Bool)) == true
+    @test length(stack(interp, String)) == 0
+
+    push!(interp, "a")
+    push!(interp, "d")
+    execute!(i, interp)
+    @test length(stack(interp, Bool)) == 2
+    @test last(stack(interp, Bool)) == false
+    @test length(stack(interp, String)) == 0
+end # @testset "Lt instructions" begin
 
 @testset "Dup stack instruction" begin
     i = Dup{String}()
