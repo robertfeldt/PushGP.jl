@@ -57,8 +57,8 @@ function execute!(interp::PushInterpreter, program::AbstractArray)
 end
 
 function run_from_execstack!(interp::PushInterpreter)
-    while length(interp.exec_stack) > 0
-        i = pop!(interp.exec_stack)
+    while length(execstack(interp)) > 0
+        i = pop!(execstack(interp))
         execute!(i, interp)
     end
 end
