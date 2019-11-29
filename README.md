@@ -1,9 +1,8 @@
-# PushGP
+# PushGP.jl
 
 [![Build Status](https://travis-ci.com/robertfeldt/PushGP.jl.svg?branch=master)](https://travis-ci.com/robertfeldt/PushGP.jl)
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/robertfeldt/PushGP.jl?svg=true)](https://ci.appveyor.com/project/robertfeldt/PushGP-jl)
 [![Codecov](https://codecov.io/gh/robertfeldt/PushGP.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/robertfeldt/PushGP.jl)
-[![Coveralls](https://coveralls.io/repos/github/robertfeldt/PushGP.jl/badge.svg?branch=master)](https://coveralls.io/github/robertfeldt/PushGP.jl?branch=master)
 
 A Julia implementation of the [Push](https://faculty.hampshire.edu/lspector/push.html) language for Genetic Programming.
 
@@ -31,13 +30,15 @@ intstack = stack(i, Int)
 @assert length(intstack) == 1
 ```
 
+There is a [large number of Push instructions](https://faculty.hampshire.edu/lspector/push3-description.html) and this package does not yet implement them all. However, this will be fixed over time and it is often trivial to add individual instructions (requiring only to write a few lines of Julia code). However, more important than implement the standard Push language is that a user can easily add their own, custom instructions and thus do genetic programming for specific domains and problems.
+
 ## Why genetic programming?
-I did genetic programming research as a young researcher but have lost touch somewhat with the GECCO community in the last 10 years or so. So first reason is to have fun and get back to GP and the GECCO community. :)
+I did genetic programming research early in my research career but have lost touch somewhat with the GECCO and Evolutionary Computation (EC) community in the last 10 years or so. So the first reason is to have fun and get back to GP and the GECCO community. :)
 
 But I also think that we need automatic programming for future Software Engineering, AI and Machine Learning. So I want to use this package as an experimental vehicle for exploring Interpretable Machine Learning, Program Synthesis etc.
 
 ## Where can I learn more about PushGP and the Push language?
-Push and PushGP has been developed by Lee Spector and his colleagues during many years. An [introduction to and overview of Push can be found here](https://faculty.hampshire.edu/lspector/push.html). Maybe the best starting point is the [Push Redux](https://erp12.github.io/push-redux/) site and, in particular, its brief [Intro to Push](https://erp12.github.io/push-redux/pages/intro_to_push/) page. 
+Push and PushGP has been developed by Lee Spector and his colleagues during many years. An [introduction to and overview of Push can be found here](https://faculty.hampshire.edu/lspector/push.html). Maybe the best starting point is the [Push Redux](https://erp12.github.io/push-redux/) site and, in particular, its brief [Intro to Push](https://erp12.github.io/push-redux/pages/intro_to_push/) page. The Push3 language description can be found [here](https://faculty.hampshire.edu/lspector/push3-description.html) but note that the Plush linear Push genome was not available at that time so have been added later.
 
 If you want to dig deep on the research please check [Lee Spector's list of publications](https://faculty.hampshire.edu/lspector/publications.html). On Lee's [main Push page](https://faculty.hampshire.edu/lspector/push.html) you can also find a long list of PushGP implementations in other languages.
 
@@ -45,6 +46,7 @@ If you want to dig deep on the research please check [Lee Spector's list of publ
 Yes, there are some differences since my focus is on using this for research and future development rather than for backward compatibility. I will try to list deviances here though:
 
 - `PushInterpreter`s can but does not have to make use of an Exec stack. While standard Push implementations always make use of such a stack there are use cases where one does not need to evolve complex programming constructs and then it might be simpler to exclude Exec stack manipulating instructions (since they might the search slower).
+- We do not yet support the Plush linear genomes for PushGP. This should be a fairly trivial fix when the core has been ported over from previous Julia versions.
 
 ## History of this package
 
