@@ -1,8 +1,7 @@
 struct AfromB{O,I} <: PushInstructionA1tB1{I,O} end
 opname(::Type{<:AfromB}) = "from"
-
-function name(::Type{AfromB{O,I}}) where {I,O}
-    lowercase(string(O)) * "_from_" * lowercase(string(I))
+function name(t::Type{AfromB{O,I}}) where {I,O}
+    lowercase(string(O)) * "_" * opname(t) * "_" * lowercase(string(I))
 end
 
 function oldname(::Type{AfromB{O,I}}) where {I,O}

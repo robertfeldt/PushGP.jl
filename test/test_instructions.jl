@@ -66,6 +66,7 @@ end # @testset "Literal instruction" begin
     @test isa(i, Add{Int})
     @test name(i) == "int64_add"
     @test opname(i) == "add"
+    @test oldopname(i) == "+"
     @test oldname(i) == "INT64.+"
 
     interp = PushInterpreter()
@@ -81,6 +82,7 @@ end # @testset "Number instructions" begin
     @test isa(i, Sub{Float64})
     @test name(i) == "float64_sub"
     @test opname(i) == "sub"
+    @test oldopname(i) == "-"
     @test oldname(i) == "FLOAT64.-"
 
     interp = PushInterpreter()
@@ -96,6 +98,7 @@ end # @testset "Number instructions" begin
     @test isa(i, Mul{Float64})
     @test name(i) == "float64_mul"
     @test opname(i) == "mul"
+    @test oldopname(i) == "*"
     @test oldname(i) == "FLOAT64.*"
 
     interp = PushInterpreter()
@@ -126,6 +129,7 @@ end # @testset "Number instructions" begin
     @test isa(i, Div{Float64})
     @test name(i) == "float64_div"
     @test opname(i) == "div"
+    @test oldopname(i) == "/"
     @test oldname(i) == "FLOAT64./"
 
     interp = PushInterpreter()
@@ -147,6 +151,7 @@ end # @testset "Number instructions" begin
 @testset "AfromB instructions" begin
     i = AfromB{String,Float64}()
     @test name(i) == "string_from_float64"
+    @test oldname(i) == "STRING.FROMFLOAT64"
     @test opname(i) == "from"
 
     interp = PushInterpreter()
@@ -154,4 +159,12 @@ end # @testset "Number instructions" begin
     execute!(i, interp)
     @test length(stack(interp, String)) == 1
     @test last(stack(interp, String)) == "3.0"
+
+    i = AfromB{Float64,Int}()
+    interp = PushInterpreter()
+    push!(interp, 5)
+    execute!(i, interp)
+    @test length(stack(interp, Int)) == 0
+    @test length(stack(interp, Float64)) == 1
+    @test last(stack(interp, Float64)) == 5.0
 end
